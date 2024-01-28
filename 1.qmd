@@ -1,0 +1,70 @@
+---
+title: "Issue: stream output grouped up"
+---
+
+In this test case, quarto.js's `fixupStreams()` is affecting the actual order of output when stream output is interlaced with tables.
+
+## Setup
+
+``` {python}
+from tabulate import tabulate
+
+tbl = tabulate([[1, 2], [3, 4]], headers=["a", "b"], tablefmt="html")
+```
+
+## Steam table stream
+
+```{python}
+print("Stream line 1")
+display(tbl)
+print("Stream line 2")
+```
+
+### Expected behaviour
+
+```
+Stream line 1
+tbl
+Stream line 2
+```
+
+### Actual behaviour
+
+```
+Stream line 1
+Stream line 2
+tbl
+```
+
+## Table stream table stream
+
+```{python}
+display(tbl)
+print("Stream line 1a")
+print("Stream line 1b")
+display(tbl)
+print("Stream line 2a")
+print("Stream line 2b")
+```
+
+### Expected behaviour
+
+```
+tbl
+Stream line 1a
+Stream line 1b
+tbl
+Stream line 2a
+Stream line 2b
+```
+
+### Actual behaviour
+
+```
+tbl
+Stream line 1a
+Stream line 1b
+Stream line 2a
+Stream line 2b
+tbl
+```
